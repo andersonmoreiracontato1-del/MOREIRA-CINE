@@ -6,7 +6,18 @@
 <meta name="theme-color" content="#050509">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MoreiraCine v60 — Cinema em Casa</title>
+<title>MoreiraCine v63 — Cinema em Casa</title>
+<!-- MoreiraCine v63 — Chave TMDB ativada (busca de temporadas reais)
+  ✅ v63: TMDB_KEY preenchida — busca de temporadas/episódios reais ativa
+<!-- MoreiraCine v62 — Detalhes Profissional + Robô IA + Organizador de Séries
+  ✅ v62: Página de Detalhes estilo streaming (backdrop, poster inset, meta-info)
+  ✅ v62: gerarSugestoesIA() — analisa histórico de perfil e ranqueia por gênero
+  ✅ v62: "Porque você assistiu X..." — fileira IA personalizada por perfil
+  ✅ v62: Organizador de Séries — seletor Temp/Ep com TMDB (+ fallback inteligente)
+  ✅ v62: TMDB integration opcional (preencha TMDB_KEY para ativar)
+  ✅ v62: Botão ↻ e Refresh mantidos; sistema de servidores intacto
+  ✅ v62: D-Pad e teclado virtual da v61 intactos
+-->
 <!-- MoreiraCine v60 — Teclado Virtual + Scroll Horizontal TV
   ✅ v60: Teclado Virtual On-Screen (A-Z, 0-9, ⌫, 🗑) no painel de busca TV
   ✅ v60: Busca em tempo real ao clicar nas teclas do teclado virtual
@@ -1184,8 +1195,16 @@ body.tv-mode .profile-card:focus{
 
 /* OVERLAYS */
 .tv-overlay-wrap{position:absolute;inset:0;z-index:200;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center}
-.tv-search-panel,.tv-filter-panel{background:var(--bg1);border:1px solid var(--border);border-radius:16px;width:92%;max-width:920px;max-height:88vh;overflow-y:auto;padding:24px}
-.tv-search-panel::-webkit-scrollbar,.tv-filter-panel::-webkit-scrollbar{width:0}
+.tv-filter-panel{background:var(--bg1);border:1px solid var(--border);border-radius:16px;width:92%;max-width:920px;max-height:88vh;overflow-y:auto;padding:24px}
+.tv-filter-panel::-webkit-scrollbar{width:0}
+/* v61: Search panel — lado a lado (teclado esq + resultados dir) */
+.tv-search-panel{background:var(--bg1);border:1px solid var(--border);border-radius:16px;width:95%;max-width:1200px;max-height:90vh;padding:24px;display:flex;flex-direction:row;gap:28px;overflow:hidden}
+.tv-search-left{flex-shrink:0;width:360px;display:flex;flex-direction:column;overflow-y:auto}
+.tv-search-left::-webkit-scrollbar{width:0}
+.tv-search-right{flex:1;display:flex;flex-direction:column;overflow-y:auto;min-width:0}
+.tv-search-right::-webkit-scrollbar{width:0}
+.tv-search-right-title{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--txt2);text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.tv-search-right-title::before{content:'';width:3px;height:12px;background:var(--red);border-radius:2px;display:inline-block;flex-shrink:0}
 .tv-overlay-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .tv-overlay-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--txt1)}
 .tv-overlay-close{background:rgba(255,255,255,0.08);border:1px solid var(--border);color:var(--txt1);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
@@ -1210,6 +1229,75 @@ body.tv-mode .profile-card:focus{
 .tv-btn-clear{padding:12px 22px;border-radius:8px;font-size:14px;font-weight:700;background:var(--bg3);color:var(--txt1);border:1px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
 .tv-btn-clear:hover{background:var(--bg4)}
 .tv-btn-clear:focus{outline:3px solid #ffcc00}
+
+/* ══════════════════════════════════════════
+   v62: INFO MODAL REDESIGN — BACKDROP ESTILO STREAMING
+══════════════════════════════════════════ */
+.info-modal{position:fixed;inset:0;z-index:1600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);padding:0}
+.info-modal.open{display:flex}
+.info-box{background:var(--bg1);border:1px solid var(--border);border-radius:18px;max-width:680px;width:96%;overflow-y:auto;max-height:96vh;animation:slideUp 0.32s var(--ease);padding-bottom:max(20px,env(safe-area-inset-bottom));position:relative}
+.info-box::-webkit-scrollbar{width:0}
+/* Backdrop */
+.info-backdrop-wrap{position:relative;height:220px;overflow:hidden;border-radius:18px 18px 0 0;flex-shrink:0}
+.info-backdrop-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.4) saturate(1.15)}
+.info-backdrop-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,5,9,0.1) 0%,rgba(5,5,9,0.6) 60%,var(--bg1) 100%),linear-gradient(to right,var(--bg1) 0%,transparent 45%)}
+.info-poster-inset{position:absolute;bottom:-28px;left:20px;width:80px;height:120px;border-radius:8px;object-fit:cover;border:2px solid rgba(255,255,255,0.12);box-shadow:0 8px 32px rgba(0,0,0,0.8);z-index:2}
+.info-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:3;transition:background 0.2s}
+.info-close:hover{background:rgba(232,16,42,0.7)}
+.info-close:focus{outline:3px solid #ffcc00}
+/* Info body com espaço para o poster inset */
+.info-body-v62{padding:40px 20px 16px 20px}
+.info-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:6px;padding-left:96px}
+.info-meta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding-left:96px}
+.info-rating-stars{font-size:12px;color:var(--gold);font-weight:700;display:flex;align-items:center;gap:4px}
+.info-meta-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--txt2)}
+.info-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:0 20px}
+.info-sinopse{font-size:12px;line-height:1.7;color:var(--txt2);margin-bottom:10px;padding:0 20px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;transition:all 0.3s}
+.info-sinopse.expanded{-webkit-line-clamp:unset}
+.info-sinopse-toggle{font-size:10px;color:var(--cyan);font-weight:700;cursor:pointer;display:inline-block;margin:0 20px 12px;line-height:1}
+.info-actions{display:flex;gap:8px;flex-wrap:wrap;padding:0 20px 4px}
+.info-btn{flex:1;min-width:90px;padding:11px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:7px;transition:0.2s}
+.info-btn.primary{background:var(--red);color:#fff}
+.info-btn.primary:hover{background:var(--red2)}
+.info-btn.secondary{background:var(--bg3);color:var(--txt1);border:1px solid var(--border)}
+.info-btn.secondary:hover{background:var(--bg4)}
+.info-btn.icon-sq{flex:0;min-width:42px;padding:11px;font-size:16px}
+.info-btn:focus{outline:3px solid #ffcc00}
+/* v62: Series organizer */
+.info-series-sect{padding:16px 20px 8px;border-top:1px solid var(--border);margin-top:12px}
+.info-series-label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--txt3);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.info-series-label::before{content:'';width:3px;height:10px;background:var(--red);border-radius:2px;flex-shrink:0}
+.info-season-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin-bottom:12px}
+.info-season-row::-webkit-scrollbar{display:none}
+.info-season-btn{flex-shrink:0;padding:5px 14px;border-radius:18px;font-size:11px;font-weight:700;background:var(--bg3);border:1px solid var(--border);color:var(--txt2);cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.info-season-btn.active,.info-season-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.info-season-btn:focus{outline:3px solid #ffcc00}
+.info-ep-grid-62{display:flex;gap:6px;flex-wrap:wrap}
+.info-ep-btn{min-width:42px;padding:7px 8px;border-radius:7px;font-size:11px;font-weight:700;background:var(--bg2);border:1px solid var(--border);color:var(--txt2);cursor:pointer;text-align:center;transition:all 0.2s}
+.info-ep-btn:hover,.info-ep-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+.info-ep-btn:focus{outline:3px solid #ffcc00}
+.info-ep-loading{font-size:11px;color:var(--txt3);padding:8px 0;display:flex;align-items:center;gap:6px}
+/* v62: IA suggestion rows */
+.info-ia-sect{border-top:1px solid var(--border);margin-top:4px}
+.info-ia-header{display:flex;align-items:center;gap:8px;padding:14px 20px 10px}
+.info-ia-title{font-size:12px;font-weight:700;color:var(--txt1);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.info-ia-badge{font-size:9px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:10px;background:rgba(245,197,24,0.12);color:var(--gold);border:1px solid rgba(245,197,24,0.25);text-transform:uppercase;flex-shrink:0}
+.info-ia-row{display:flex;gap:10px;overflow-x:auto;padding:0 20px 20px;scrollbar-width:none}
+.info-ia-row::-webkit-scrollbar{display:none}
+.info-ia-card{flex-shrink:0;width:85px;cursor:pointer;outline:none;border-radius:7px}
+.info-ia-card img{width:85px;height:126px;border-radius:7px;object-fit:cover;transition:transform 0.2s,box-shadow 0.2s}
+.info-ia-card:hover img,.info-ia-card:focus img{transform:scale(1.06);box-shadow:0 8px 24px rgba(0,0,0,0.6)}
+.info-ia-card:focus{outline:3px solid #ffcc00;border-radius:7px}
+.info-ia-card-title{font-size:9px;color:var(--txt2);margin-top:4px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* TV mode tweaks for v62 */
+body.tv-mode .info-box{max-width:900px;max-height:95vh}
+body.tv-mode .info-backdrop-wrap{height:280px}
+body.tv-mode .info-poster-inset{width:110px;height:165px;bottom:-38px}
+body.tv-mode .info-title{font-size:32px;padding-left:130px}
+body.tv-mode .info-meta-row{padding-left:130px}
+body.tv-mode .info-body-v62{padding-top:52px}
+body.tv-mode .info-btn{font-size:14px;padding:13px 18px}
+body.tv-mode .info-btn.icon-sq{padding:13px;font-size:18px}
 
 </style>
 </head>
@@ -1491,34 +1579,73 @@ body.tv-mode .profile-card:focus{
   <input type="file" id="legendaInput" accept=".vtt,.srt" style="display:none" onchange="carregarLegenda(this)">
 </div><!-- /.modal -->
 
-<!-- ══ INFO MODAL ══ -->
+<!-- ══ INFO MODAL v62 — BACKDROP ESTILO STREAMING ══ -->
 <div class="info-modal" id="infoModal" onclick="fecharInfo(event)">
   <div class="info-box" style="position:relative">
-    <div class="info-handle"></div>
-    <img class="info-poster" id="infoPoster" src="" alt="">
-    <button class="info-close" onclick="fecharInfo()">✕</button>
-    <div class="info-body">
+
+    <!-- ── BACKDROP ── -->
+    <div class="info-backdrop-wrap">
+      <img class="info-backdrop-img" id="infoBackdrop" src="" alt="">
+      <div class="info-backdrop-gradient"></div>
+      <img class="info-poster-inset" id="infoPoster" src="" alt="">
+      <button class="info-close" tabindex="0" onclick="fecharInfo()">✕</button>
+    </div>
+
+    <!-- ── CORPO ── -->
+    <div class="info-body-v62">
       <div class="info-title" id="infoTitle">—</div>
-      <div class="info-tags" id="infoTags"></div>
-      <div class="info-sinopse" id="infoDesc">Conteúdo disponível no MoreiraCine em alta definição.</div>
-      <div class="info-actions">
-        <button class="info-btn primary" onclick="playInfoItem()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          Assistir
-        </button>
-        <button class="info-btn secondary" id="infoFavBtn" onclick="favInfoItem()">♡ Favoritar</button>
+      <div class="info-meta-row" id="infoMetaRow"></div>
+    </div>
+    <div class="info-tags" id="infoTags"></div>
+    <div class="info-sinopse" id="infoDesc">Conteúdo disponível no MoreiraCine em alta definição.</div>
+
+    <!-- ── BOTÕES DE AÇÃO ── -->
+    <div class="info-actions">
+      <button class="info-btn primary" tabindex="0" onclick="playInfoItem()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Assistir
+      </button>
+      <button class="info-btn secondary" id="infoFavBtn" tabindex="0" onclick="favInfoItem()">♡ Favoritar</button>
+      <button class="info-btn secondary icon-sq" id="infoBtnRefresh" tabindex="0" onclick="refreshInfoServidor()" title="Trocar servidor">↻</button>
+    </div>
+
+    <!-- ── ORGANIZADOR DE SÉRIES (dinâmico) ── -->
+    <div id="infoSeriesSection" style="display:none">
+      <div class="info-series-sect">
+        <div class="info-series-label">Temporadas &amp; Episódios</div>
+        <div class="info-season-row" id="infoSeasonRow"></div>
+        <div class="info-ep-loading" id="infoEpLoading" style="display:none">
+          <div class="loader" style="width:12px;height:12px;border-width:2px"></div>
+          <span>Carregando episódios...</span>
+        </div>
+        <div class="info-ep-grid-62" id="infoEpGrid62"></div>
       </div>
     </div>
-    <!-- Sugestões relacionadas -->
+
+    <!-- ── IA: PORQUE VOCÊ ASSISTIU... ── -->
+    <div id="infoIASection" style="display:none">
+      <div class="info-ia-sect">
+        <div class="info-ia-header">
+          <div class="info-ia-title" id="infoIALabel">Porque você assistiu...</div>
+          <div class="info-ia-badge">IA ✦</div>
+        </div>
+        <div class="info-ia-row" id="infoIARow"></div>
+      </div>
+    </div>
+
+    <!-- ── SUGESTÕES ALEATÓRIAS ── -->
     <div id="infoSuggestSection">
-      <div class="info-suggest-title">
-        <span class="info-suggest-label">Você também pode gostar de</span>
-        <button class="info-suggest-btn" id="infoSuggestBtn" onclick="atualizarSugestoesInfo()" title="Novas sugestões">
-          <span class="ai-spin-icon">✦</span>
-        </button>
+      <div class="info-ia-sect">
+        <div class="info-ia-header">
+          <div class="info-ia-title">Sugestões do MoreiraCine</div>
+          <button class="info-suggest-btn" id="infoSuggestBtn" onclick="atualizarSugestoesInfo()" title="Novas sugestões" tabindex="0">
+            <span class="ai-spin-icon">✦</span>
+          </button>
+        </div>
+        <div class="info-ia-row" id="infoSuggestGrid"></div>
       </div>
-      <div class="info-suggest-grid" id="infoSuggestGrid"></div>
     </div>
+
   </div>
 </div>
 
@@ -2498,71 +2625,323 @@ function atualizarFavBtns(titulo, estado) {
   const ifb = document.getElementById('infoFavBtn');
   if (infoItemAtual?.titulo===titulo && ifb) ifb.textContent=estado?'♥ Favoritado':'♡ Favoritar';
 }
+// ══════════════════════════════════════════════════════════════════
+//  v62: INFO MODAL — DETALHES PROFISSIONAL
+// ══════════════════════════════════════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════════
-//  INFO MODAL
-// ══════════════════════════════════════════════════════════════════
+// TMDB: preencha sua chave gratuita em https://www.themoviedb.org/settings/api
+const TMDB_KEY = 'c0d45a1f41847845fcf51497f1eec3f5'; // TMDB API Key ativa
+
+// Histórico de reprodução por perfil
+function _registrarHistorico(item) {
+  const key = 'mc_hist' + _prefixoPerfil();
+  const hist = LS.get(key) || [];
+  const novo = {titulo:item.titulo, categoria:item.categoria||'', ts:Date.now()};
+  const filtrado = hist.filter(h => h.titulo !== item.titulo);
+  filtrado.unshift(novo);
+  LS.set(key, filtrado.slice(0, 80)); // guarda últimos 80
+}
+
+function _getHistorico() {
+  return LS.get('mc_hist' + _prefixoPerfil()) || [];
+}
+
+// ── gerarSugestoesIA ─────────────────────────────────────────────
+// Analisa histórico → ranqueia por gênero/categoria → retorna lista
+function gerarSugestoesIA(itemAtual) {
+  const hist = _getHistorico();
+  if (!hist.length) return todosDados.filter(i => i.titulo !== itemAtual.titulo).sort(() => Math.random() - 0.5).slice(0, 16);
+
+  // Conta frequência de categorias no histórico
+  const freq = {};
+  hist.forEach(h => {
+    const cat = (h.categoria || '').toLowerCase();
+    cat.split(/[,;|/\s]+/).forEach(tok => {
+      tok = tok.trim();
+      if (tok.length > 2) freq[tok] = (freq[tok] || 0) + 1;
+    });
+  });
+
+  // Pontua cada item do catálogo pela similaridade
+  const pontuado = todosDados
+    .filter(i => i.titulo !== itemAtual.titulo)
+    .map(i => {
+      const cat = (i.categoria || '').toLowerCase();
+      let score = 0;
+      Object.entries(freq).forEach(([tok, count]) => { if (cat.includes(tok)) score += count; });
+      // Bônus se mesma categoria que o item atual
+      const catAtual = (itemAtual.categoria || '').toLowerCase();
+      if (catAtual && cat.includes(catAtual.split(/[,\s]/)[0])) score += 5;
+      return { item: i, score };
+    })
+    .sort((a, b) => b.score - a.score || Math.random() - 0.5);
+
+  return pontuado.slice(0, 16).map(p => p.item);
+}
+
+// ── TMDB: buscar temporadas ───────────────────────────────────────
+async function _tmdbBuscarInfo(titulo, tipo) {
+  if (!TMDB_KEY) return null;
+  try {
+    const t = encodeURIComponent(titulo.replace(/\s+(temporada|season)\s*\d+.*/i,'').trim());
+    const media = tipo === 'tv' ? 'tv' : 'movie';
+    const url = `https://api.themoviedb.org/3/search/${media}?api_key=${TMDB_KEY}&query=${t}&language=pt-BR&page=1`;
+    const r = await fetch(url); if (!r.ok) return null;
+    const d = await r.json();
+    return d.results?.[0] || null;
+  } catch(e) { return null; }
+}
+
+async function _tmdbBuscarTemporadas(tmdbId) {
+  if (!TMDB_KEY || !tmdbId) return null;
+  try {
+    const url = `https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${TMDB_KEY}&language=pt-BR`;
+    const r = await fetch(url); if (!r.ok) return null;
+    const d = await r.json();
+    return d.seasons || null;
+  } catch(e) { return null; }
+}
+
+// ── Detecta se é série ───────────────────────────────────────────
+function _ehSerie(item) {
+  const cat = (item.categoria||'').toLowerCase();
+  const tit = (item.titulo||'').toLowerCase();
+  return CAT_MAP.series.some(k => cat.includes(k) || tit.includes(k));
+}
+
+// ── Gera temporadas: tenta TMDB, fallback inteligente ──────────────
+function _estimarTemporadas(item) {
+  // Analisa itens com título similar para descobrir máximo de temporadas
+  const tit = (item.titulo||'').toLowerCase().replace(/\s+(temporada|season|temp\.?|s\d+).*/i,'').trim();
+  const similares = todosDados.filter(i => {
+    const t = (i.titulo||'').toLowerCase();
+    return t.startsWith(tit.slice(0, Math.min(tit.length, 10))) && i.titulo !== item.titulo;
+  });
+  // Tenta extrair número de temporadas dos similares
+  let maxTemp = 1;
+  [...similares, item].forEach(i => {
+    const m = (i.titulo||'').match(/(?:temporada|season|temp\.?|s)[\s.]?(\d+)/i);
+    if (m) maxTemp = Math.max(maxTemp, parseInt(m[1]));
+    const m2 = (i.categoria||'').match(/s(\d+)e\d+/i);
+    if (m2) maxTemp = Math.max(maxTemp, parseInt(m2[1]));
+  });
+  return Math.max(1, maxTemp);
+}
+
+let _infoSerieState = { temp: 1, totalTemps: 1, tmdbId: null, epsPorTemp: {} };
+
+async function _renderizarSeriesOrganizer(item) {
+  const sect = document.getElementById('infoSeriesSection');
+  const seasonRow = document.getElementById('infoSeasonRow');
+  const epGrid = document.getElementById('infoEpGrid62');
+  const epLoading = document.getElementById('infoEpLoading');
+  if (!sect || !seasonRow || !epGrid) return;
+
+  sect.style.display = '';
+  seasonRow.innerHTML = '';
+  epGrid.innerHTML = '';
+  _infoSerieState = { temp: 1, totalTemps: 1, tmdbId: null, epsPorTemp: {} };
+
+  // Tenta TMDB
+  if (TMDB_KEY) {
+    epLoading.style.display = 'flex';
+    try {
+      const res = await _tmdbBuscarInfo(item.titulo, 'tv');
+      if (res) {
+        _infoSerieState.tmdbId = res.id;
+        const seasons = await _tmdbBuscarTemporadas(res.id);
+        if (seasons) {
+          const validas = seasons.filter(s => s.season_number > 0);
+          _infoSerieState.totalTemps = validas.length || 1;
+          validas.forEach(s => { _infoSerieState.epsPorTemp[s.season_number] = s.episode_count; });
+        }
+      }
+    } catch(e) {}
+    epLoading.style.display = 'none';
+  }
+
+  // Fallback: estimativa inteligente
+  if (_infoSerieState.totalTemps === 1) {
+    _infoSerieState.totalTemps = _estimarTemporadas(item);
+  }
+
+  // Garante ao menos 1 ep por temporada
+  for (let t = 1; t <= _infoSerieState.totalTemps; t++) {
+    if (!_infoSerieState.epsPorTemp[t]) _infoSerieState.epsPorTemp[t] = 12;
+  }
+
+  // Render season buttons
+  for (let t = 1; t <= _infoSerieState.totalTemps; t++) {
+    const btn = document.createElement('button');
+    btn.className = 'info-season-btn' + (t === 1 ? ' active' : '');
+    btn.tabIndex = 0;
+    btn.textContent = 'Temp ' + t;
+    btn.addEventListener('click', () => _selecionarTemporada(item, t));
+    btn.addEventListener('keydown', e => { if(e.key==='Enter') _selecionarTemporada(item, t); });
+    seasonRow.appendChild(btn);
+  }
+
+  _selecionarTemporada(item, 1);
+}
+
+function _selecionarTemporada(item, temp) {
+  _infoSerieState.temp = temp;
+  const eps = _infoSerieState.epsPorTemp[temp] || 12;
+
+  document.querySelectorAll('.info-season-btn').forEach((b, i) => {
+    b.classList.toggle('active', i + 1 === temp);
+  });
+
+  const epGrid = document.getElementById('infoEpGrid62');
+  if (!epGrid) return;
+  epGrid.innerHTML = '';
+
+  for (let ep = 1; ep <= eps; ep++) {
+    const btn = document.createElement('button');
+    btn.className = 'info-ep-btn';
+    btn.tabIndex = 0;
+    btn.textContent = 'Ep ' + String(ep).padStart(2, '0');
+    const s = temp, e = ep;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.info-ep-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      _playSerieEp(item, s, e);
+    });
+    btn.addEventListener('keydown', ev => { if(ev.key==='Enter') btn.click(); });
+    epGrid.appendChild(btn);
+  }
+}
+
+function _playSerieEp(item, s, ep) {
+  const itemEp = { ...item, _serie_s: s, _serie_ep: ep };
+  fecharInfo(); setTimeout(() => abrirPlayer(itemEp), 120);
+}
+
+// ── abrirInfo v62 ────────────────────────────────────────────────
 function abrirInfo(item) {
   infoItemAtual = item;
-  document.getElementById('infoPoster').src = item.poster||FALLBACK;
-  document.getElementById('infoTitle').textContent = item.titulo||'—';
-  const sinopse = item.descricao||item.sinopse||'Conteúdo disponível no MoreiraCine.';
+  _registrarHistorico(item);
+
+  // Backdrop + poster inset
+  const poster = item.poster || FALLBACK;
+  const backdropEl = document.getElementById('infoBackdrop');
+  if (backdropEl) backdropEl.src = poster;
+  document.getElementById('infoPoster').src = poster;
+
+  // Título
+  document.getElementById('infoTitle').textContent = item.titulo || '—';
+
+  // Meta row: rating, ano, categoria
+  const metaEl = document.getElementById('infoMetaRow');
+  if (metaEl) {
+    const nota = item.nota || item.rating || item.imdb_rating || '';
+    const estrelas = nota ? _notaParaEstrelas(parseFloat(nota)) : '';
+    metaEl.innerHTML = `
+      ${nota ? `<span class="info-rating-stars">${estrelas} <span style="color:var(--txt2);font-weight:600">${nota}</span></span>` : ''}
+      ${item.ano ? `<span class="info-meta-badge">📅 ${item.ano}</span>` : ''}
+      ${item.categoria ? `<span class="info-meta-badge">${(item.categoria||'').toUpperCase().slice(0,20)}</span>` : ''}
+    `;
+  }
+
+  // Tags
+  document.getElementById('infoTags').innerHTML = `
+    <span class="hero-tag hd">HD</span>
+    <span class="hero-tag cat">${(item.categoria||'Conteúdo').split(/[,|]/)[0].trim().toUpperCase().slice(0,18)}</span>
+    ${item.ano ? `<span class="hero-tag" style="background:rgba(255,255,255,0.05);color:var(--txt2);border:1px solid var(--border)">${item.ano}</span>` : ''}
+  `;
+
+  // Sinopse
+  const sinopse = item.descricao || item.sinopse || 'Conteúdo disponível no MoreiraCine em alta definição.';
   const descEl = document.getElementById('infoDesc');
   descEl.className = 'info-sinopse';
   descEl.textContent = sinopse;
   let tog = document.getElementById('infoSinopseToggle');
   if (!tog) {
-    tog = document.createElement('div'); tog.id='infoSinopseToggle'; tog.className='info-sinopse-toggle';
+    tog = document.createElement('div'); tog.id = 'infoSinopseToggle'; tog.className = 'info-sinopse-toggle';
     descEl.insertAdjacentElement('afterend', tog);
   }
-  if (sinopse.length > 180) {
-    tog.textContent='▼ Ver mais'; tog.style.display='block';
-    tog.onclick=()=>{ const ex=descEl.classList.toggle('expanded'); tog.textContent=ex?'▲ Ver menos':'▼ Ver mais'; };
-  } else tog.style.display='none';
-  document.getElementById('infoFavBtn').textContent = isFav(item.titulo)?'♥ Favoritado':'♡ Favoritar';
-  document.getElementById('infoTags').innerHTML = `
-    <span class="hero-tag hd">HD</span>
-    <span class="hero-tag cat">${(item.categoria||'Conteúdo').toUpperCase()}</span>
-    ${item.ano?`<span class="hero-tag" style="background:rgba(255,255,255,0.05);color:var(--txt2);border:1px solid var(--border)">${item.ano}</span>`:''}
-  `;
+  if (sinopse.length > 200) {
+    tog.textContent = '▼ Ver mais'; tog.style.display = 'block';
+    tog.onclick = () => { const ex = descEl.classList.toggle('expanded'); tog.textContent = ex ? '▲ Ver menos' : '▼ Ver mais'; };
+  } else tog.style.display = 'none';
+
+  // Fav button
+  document.getElementById('infoFavBtn').textContent = isFav(item.titulo) ? '♥ Favoritado' : '♡ Favoritar';
+
+  // Abre modal
   document.getElementById('infoModal').classList.add('open');
-  renderSugestoesInfo(item);
+
+  // Séries organizer
+  const serSect = document.getElementById('infoSeriesSection');
+  if (_ehSerie(item)) {
+    _renderizarSeriesOrganizer(item);
+  } else {
+    if (serSect) serSect.style.display = 'none';
+  }
+
+  // IA Suggestions
+  setTimeout(() => {
+    _renderSugestoesIA(item);
+    renderSugestoesInfo(item);
+  }, 50);
 }
+
+function _notaParaEstrelas(nota) {
+  if (!nota || isNaN(nota)) return '';
+  const n10 = nota > 10 ? nota / 10 : nota; // normaliza para 0-10
+  const stars = Math.round(n10 / 2); // 0-5 estrelas
+  return '★'.repeat(Math.max(0, Math.min(5, stars))) + '☆'.repeat(Math.max(0, 5 - stars));
+}
+
+function _renderSugestoesIA(item) {
+  const sect = document.getElementById('infoIASection');
+  const row = document.getElementById('infoIARow');
+  const label = document.getElementById('infoIALabel');
+  if (!sect || !row) return;
+
+  const hist = _getHistorico();
+  const sugs = gerarSugestoesIA(item);
+
+  if (sugs.length < 3) { sect.style.display = 'none'; return; }
+  sect.style.display = '';
+  if (label && hist.length > 1) {
+    const ultimo = hist.find(h => h.titulo !== item.titulo);
+    label.textContent = ultimo ? `Porque você assistiu "${ultimo.titulo.slice(0, 28)}..."` : 'Recomendado para você';
+  } else if (label) {
+    label.textContent = 'Recomendado para você';
+  }
+
+  row.innerHTML = '';
+  sugs.slice(0, 14).forEach(sugg => {
+    const card = document.createElement('div');
+    card.className = 'info-ia-card'; card.tabIndex = 0;
+    card.innerHTML = `<img src="${sugg.poster || FALLBACK}" alt="${esc(sugg.titulo)}" loading="lazy" onerror="this.src='${FALLBACK}'"><div class="info-ia-card-title">${esc(sugg.titulo.slice(0, 20))}</div>`;
+    card.addEventListener('click', () => { fecharInfo(); setTimeout(() => abrirInfo(sugg), 120); });
+    card.addEventListener('keydown', e => { if(e.key==='Enter') card.click(); });
+    row.appendChild(card);
+  });
+}
+
 function fecharInfo(e) {
-  if (e&&e.target!==document.getElementById('infoModal')) return;
+  if (e && e.target !== document.getElementById('infoModal')) return;
   document.getElementById('infoModal').classList.remove('open');
   infoItemAtual = null;
 }
 
 function renderSugestoesInfo(item) {
-  const grid = document.getElementById('infoSuggestGrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  const cat = (item.categoria||'').toLowerCase();
-  let sugs = todosDados.filter(i => i.titulo !== item.titulo && (i.categoria||'').toLowerCase() === cat);
-  if (sugs.length < 6) {
-    const extras = todosDados.filter(i => i.titulo !== item.titulo && !sugs.includes(i));
-    sugs = [...sugs, ...extras].slice(0, 12);
-  } else {
-    sugs = sugs.slice(0, 12);
-  }
-  sugs.forEach((sugg, idx) => {
-    const fav = isFav(sugg.titulo);
+  const row = document.getElementById('infoSuggestGrid');
+  if (!row) return;
+  row.innerHTML = '';
+  const cat = (item.categoria || '').toLowerCase();
+  let sugs = todosDados.filter(i => i.titulo !== item.titulo && (i.categoria || '').toLowerCase().includes(cat.split(/[,\s]/)[0] || cat));
+  if (sugs.length < 6) sugs = [...sugs, ...todosDados.filter(i => i.titulo !== item.titulo && !sugs.includes(i))];
+  sugs.slice(0, 14).forEach(sugg => {
     const card = document.createElement('div');
-    card.className = 'card';
-    card.tabIndex = 0;
-    card.style.cssText = 'width:100%;height:0;padding-top:150%;position:relative;border-radius:7px';
-    card.innerHTML = `
-      <img src="${sugg.poster||FALLBACK}" alt="${esc(sugg.titulo)}" loading="lazy"
-        onerror="this.src='${FALLBACK}'"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:7px">
-      <div class="card-overlay" style="border-radius:7px">
-        <div class="card-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-        <div class="card-title" style="position:absolute;bottom:8px;left:8px;right:8px;font-size:10px;font-weight:600;color:#fff;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(sugg.titulo)}</div>
-      </div>
-    `;
+    card.className = 'info-ia-card'; card.tabIndex = 0;
+    card.innerHTML = `<img src="${sugg.poster || FALLBACK}" alt="${esc(sugg.titulo)}" loading="lazy" onerror="this.src='${FALLBACK}'"><div class="info-ia-card-title">${esc(sugg.titulo.slice(0, 20))}</div>`;
     card.addEventListener('click', () => { fecharInfo(); setTimeout(() => abrirInfo(sugg), 120); });
-    grid.appendChild(card);
+    card.addEventListener('keydown', e => { if(e.key==='Enter') card.click(); });
+    row.appendChild(card);
   });
 }
 
@@ -2570,38 +2949,30 @@ function atualizarSugestoesInfo() {
   if (!infoItemAtual) return;
   const btn = document.getElementById('infoSuggestBtn');
   if (btn) { btn.classList.add('spinning'); setTimeout(() => btn.classList.remove('spinning'), 900); }
-  const cat = (infoItemAtual.categoria||'').toLowerCase();
-  let pool = todosDados.filter(i => i.titulo !== infoItemAtual.titulo);
-  const sameCat = pool.filter(i => (i.categoria||'').toLowerCase() === cat);
-  const others  = pool.filter(i => (i.categoria||'').toLowerCase() !== cat);
-  const shuffle = arr => arr.sort(() => Math.random() - 0.5);
-  const novo = [...shuffle(sameCat).slice(0, 9), ...shuffle(others).slice(0, 3)];
-  const grid = document.getElementById('infoSuggestGrid');
-  grid.innerHTML = '';
-  novo.forEach((item, idx) => {
+  const row = document.getElementById('infoSuggestGrid');
+  if (!row) return;
+  row.innerHTML = '';
+  const pool = [...todosDados].filter(i => i.titulo !== infoItemAtual.titulo).sort(() => Math.random() - 0.5);
+  pool.slice(0, 14).forEach(sugg => {
     const card = document.createElement('div');
-    card.className = 'card';
-    card.style.cssText = 'width:100%;height:0;padding-top:150%;position:relative;border-radius:7px';
-    card.innerHTML = `
-      <img src="${item.poster||FALLBACK}" alt="${esc(item.titulo)}" loading="lazy"
-        onerror="this.src='${FALLBACK}'"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:7px">
-      <div class="card-overlay" style="border-radius:7px">
-        <div class="card-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-        <div class="card-title" style="position:absolute;bottom:8px;left:8px;right:8px;font-size:10px;font-weight:600;color:#fff;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(item.titulo)}</div>
-      </div>
-    `;
-    card.addEventListener('click', () => { fecharInfo(); setTimeout(() => abrirInfo(item), 120); });
-    grid.appendChild(card);
+    card.className = 'info-ia-card'; card.tabIndex = 0;
+    card.innerHTML = `<img src="${sugg.poster || FALLBACK}" alt="${esc(sugg.titulo)}" loading="lazy" onerror="this.src='${FALLBACK}'"><div class="info-ia-card-title">${esc(sugg.titulo.slice(0, 20))}</div>`;
+    card.addEventListener('click', () => { fecharInfo(); setTimeout(() => abrirInfo(sugg), 120); });
+    card.addEventListener('keydown', e => { if(e.key==='Enter') card.click(); });
+    row.appendChild(card);
   });
   showToast('✦ Sugestões atualizadas');
 }
-function playInfoItem()  { const it=infoItemAtual; fecharInfo(); abrirPlayer(it) }
+
+function playInfoItem()  { const it = infoItemAtual; fecharInfo(); abrirPlayer(it); }
 function favInfoItem()   {
   if (!infoItemAtual) return;
   const r = toggleFav(infoItemAtual.titulo);
-  document.getElementById('infoFavBtn').textContent = r?'♥ Favoritado':'♡ Favoritar';
-  atualizarFavBtns(infoItemAtual.titulo,r);
+  document.getElementById('infoFavBtn').textContent = r ? '♥ Favoritado' : '♡ Favoritar';
+  atualizarFavBtns(infoItemAtual.titulo, r);
+}
+function refreshInfoServidor() {
+  showToast('↻ Troque o servidor no player após abrir');
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2666,8 +3037,10 @@ function abrirPlayer(item) {
 
   const id = resolverImdbID(item);
   const cat = (item.categoria||'').toLowerCase();
-  const ehSerie = !!(item.temporada||item.episodio||['serie','series','seri','temporada','season','anime'].some(k=>cat.includes(k)));
-  const s = (item.temporada||'1').toString(), e = (item.episodio||'1').toString();
+  const ehSerie = !!(item.temporada||item.episodio||item._serie_s||['serie','series','seri','temporada','season','anime'].some(k=>cat.includes(k)));
+  // v62: suporta episódio selecionado no organizador de séries
+  const s = (item._serie_s||item.temporada||'1').toString();
+  const e = (item._serie_ep||item.episodio||'1').toString();
 
   if (!id || id.startsWith('id-')) {
     if (item.url && item.url.startsWith('http')) {
@@ -3644,13 +4017,21 @@ function _tvSelecionarCanal(canal,el) {
   const meta=document.getElementById('tvChannelMeta'); if(meta) meta.textContent=canal.titulo+(canal.categoria?' · '+canal.categoria:'');
 }
 
-// ── Search (v60: teclado virtual) ──
+// ── Search (v61: layout lado a lado — teclado esq + resultados dir) ──
 let _tvKbTexto = '';
 function abrirTVSearch() {
   _tvKbTexto = '';
   document.getElementById('tvSearchWrap').classList.remove('tv-hidden');
   document.getElementById('tvKbText').textContent = '';
-  document.getElementById('tvSearchResults').innerHTML = '';
+  // Mostra conteúdo popular por padrão no lado direito
+  const title = document.getElementById('tvSearchRightTitle');
+  if (title) title.textContent = 'Buscas Populares';
+  const results = document.getElementById('tvSearchResults');
+  results.innerHTML = '';
+  const popular = todosDados.length
+    ? [...todosDados].sort(() => Math.random() - 0.5).slice(0, 20)
+    : [];
+  popular.forEach(item => _tvRenderCard(item, results));
   // Foca na primeira tecla
   setTimeout(()=>{ const first=document.querySelector('.tv-key'); if(first) first.focus(); },100);
 }
@@ -3659,6 +4040,8 @@ function fecharTVSearch() {
   _tvKbTexto = '';
   document.getElementById('tvKbText').textContent = '';
   document.getElementById('tvSearchResults').innerHTML = '';
+  const title = document.getElementById('tvSearchRightTitle');
+  if (title) title.textContent = 'Buscas Populares';
 }
 function tvTeclarLetra(char) {
   _tvKbTexto += char;
@@ -3673,10 +4056,19 @@ function tvTeclarApagar() {
 function tvTeclarLimpar() {
   _tvKbTexto = '';
   document.getElementById('tvKbText').textContent = '';
-  document.getElementById('tvSearchResults').innerHTML = '';
+  tvBuscar('');
 }
 function tvBuscar(q) {
-  const results=document.getElementById('tvSearchResults'); if(!q||!q.trim()){results.innerHTML='';return;}
+  const results=document.getElementById('tvSearchResults');
+  const title=document.getElementById('tvSearchRightTitle');
+  if (!q||!q.trim()) {
+    results.innerHTML='';
+    if (title) title.textContent='Buscas Populares';
+    const popular=[...todosDados].sort(()=>Math.random()-0.5).slice(0,20);
+    popular.forEach(item=>_tvRenderCard(item,results));
+    return;
+  }
+  if (title) title.textContent='Resultados';
   const found=todosDados.filter(i=>(i.titulo||'').toLowerCase().includes(q.toLowerCase())||(i.categoria||'').toLowerCase().includes(q.toLowerCase())).slice(0,24);
   results.innerHTML=''; found.forEach(item=>_tvRenderCard(item,results));
 }
@@ -3777,66 +4169,76 @@ window.onload = function() {
     </div>
   </div>
 
-  <!-- SEARCH OVERLAY -->
+  <!-- SEARCH OVERLAY — v61: teclado esq + resultados dir -->
   <div class="tv-overlay-wrap tv-hidden" id="tvSearchWrap">
     <div class="tv-search-panel">
-      <div class="tv-overlay-header">
-        <span class="tv-overlay-title">🔍 Buscar</span>
-        <button class="tv-overlay-close" tabindex="0" onclick="fecharTVSearch()">✕</button>
+
+      <!-- ── LADO ESQUERDO: header + display + teclado ── -->
+      <div class="tv-search-left">
+        <div class="tv-overlay-header">
+          <span class="tv-overlay-title">🔍 Buscar</span>
+          <button class="tv-overlay-close" tabindex="0" onclick="fecharTVSearch()">✕</button>
+        </div>
+        <!-- Display virtual do que foi digitado -->
+        <div class="tv-keyboard-display" id="tvKbDisplay">
+          <span id="tvKbText"></span><span class="tv-kbd-cursor"></span>
+        </div>
+        <!-- Teclado Virtual v60 -->
+        <div class="tv-keyboard" id="tvKeyboard">
+          <!-- Linha 1: A-I -->
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('A')">A</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('B')">B</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('C')">C</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('D')">D</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('E')">E</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('F')">F</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('G')">G</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('H')">H</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('I')">I</button>
+          <!-- Linha 2: J-R -->
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('J')">J</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('K')">K</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('L')">L</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('M')">M</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('N')">N</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('O')">O</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('P')">P</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Q')">Q</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('R')">R</button>
+          <!-- Linha 3: S-Z + Espaço -->
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('S')">S</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('T')">T</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('U')">U</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('V')">V</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('W')">W</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('X')">X</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Y')">Y</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Z')">Z</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra(' ')">⎵</button>
+          <!-- Linha 4: 0-8 -->
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('0')">0</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('1')">1</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('2')">2</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('3')">3</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('4')">4</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('5')">5</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('6')">6</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('7')">7</button>
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('8')">8</button>
+          <!-- Linha 5: 9 + botões especiais -->
+          <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('9')">9</button>
+          <button class="tv-key tv-key-special" tabindex="0" onclick="tvTeclarApagar()">⌫ Apagar</button>
+          <button class="tv-key tv-key-special tv-key-clear" tabindex="0" onclick="tvTeclarLimpar()">🗑 Limpar</button>
+          <button class="tv-key tv-key-special" tabindex="0" onclick="fecharTVSearch()" style="color:var(--txt2)">✕ Fechar</button>
+        </div>
+      </div><!-- /.tv-search-left -->
+
+      <!-- ── LADO DIREITO: título + resultados ── -->
+      <div class="tv-search-right">
+        <div class="tv-search-right-title" id="tvSearchRightTitle">Buscas Populares</div>
+        <div class="tv-search-results" id="tvSearchResults"></div>
       </div>
-      <!-- Display virtual do que foi digitado -->
-      <div class="tv-keyboard-display" id="tvKbDisplay">
-        <span id="tvKbText"></span><span class="tv-kbd-cursor"></span>
-      </div>
-      <!-- Teclado Virtual v60 -->
-      <div class="tv-keyboard" id="tvKeyboard">
-        <!-- Linha 1: A-I -->
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('A')">A</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('B')">B</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('C')">C</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('D')">D</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('E')">E</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('F')">F</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('G')">G</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('H')">H</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('I')">I</button>
-        <!-- Linha 2: J-R -->
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('J')">J</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('K')">K</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('L')">L</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('M')">M</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('N')">N</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('O')">O</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('P')">P</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Q')">Q</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('R')">R</button>
-        <!-- Linha 3: S-Z + Espaço -->
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('S')">S</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('T')">T</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('U')">U</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('V')">V</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('W')">W</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('X')">X</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Y')">Y</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Z')">Z</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra(' ')">⎵</button>
-        <!-- Linha 4: 0-8 -->
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('0')">0</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('1')">1</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('2')">2</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('3')">3</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('4')">4</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('5')">5</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('6')">6</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('7')">7</button>
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('8')">8</button>
-        <!-- Linha 5: 9 + botões especiais -->
-        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('9')">9</button>
-        <button class="tv-key tv-key-special" tabindex="0" onclick="tvTeclarApagar()">⌫ Apagar</button>
-        <button class="tv-key tv-key-special tv-key-clear" tabindex="0" onclick="tvTeclarLimpar()">🗑 Limpar</button>
-        <button class="tv-key tv-key-special" tabindex="0" onclick="fecharTVSearch()" style="color:var(--txt2)">✕ Fechar</button>
-      </div>
-      <div class="tv-search-results" id="tvSearchResults" style="margin-top:16px"></div>
+
     </div>
   </div>
 
