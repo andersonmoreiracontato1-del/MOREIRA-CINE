@@ -6,12 +6,16 @@
 <meta name="theme-color" content="#050509">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MoreiraCine v59 — Cinema em Casa</title>
-<!-- MoreiraCine v58 — Botão Refresh de Servidor
-  ✅ v58: Botão ↻ vermelho no canto superior direito do player
-  ✅ v58: Invisível por padrão, aparece ao tocar na tela (3s) e some sozinho
-  ✅ v58: Aparece automaticamente ao carregar novo servidor
-  ✅ v58: Ao clicar gira + troca servidor + some automaticamente
+<title>MoreiraCine v60 — Cinema em Casa</title>
+<!-- MoreiraCine v60 — Teclado Virtual + Scroll Horizontal TV
+  ✅ v60: Teclado Virtual On-Screen (A-Z, 0-9, ⌫, 🗑) no painel de busca TV
+  ✅ v60: Busca em tempo real ao clicar nas teclas do teclado virtual
+  ✅ v60: D-Pad navegação completa no teclado (setas + Enter)
+  ✅ v60: Posters em fileiras horizontais (display:flex, scroll-snap) no modo TV
+  ✅ v60: Aba Destaques com múltiplas fileiras temáticas (Filmes, Séries, Anime, Kids)
+  ✅ v60: Auto-scroll suave ao focar card com D-Pad
+  ✅ v60: Botões Busca/Filtro com foco amarelo mais visível
+  ✅ v60: Todas as funcionalidades mobile e perfis da v59 mantidas
 <!-- MoreiraCine v53 — Redesign Completo
   ✅ v53: Tabs de categoria entre hero e conteúdo
   ✅ v53: Ver Todos funcional — abre grid de todos os itens
@@ -1062,9 +1066,9 @@ body.tv-mode .profile-card:focus{
 .tv-tab.tv-tab-active{background:var(--red);color:#fff}
 .tv-tab:focus{outline:3px solid #ffcc00;outline-offset:2px}
 .tv-nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:16px}
-.tv-icon-btn{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--txt1);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.tv-icon-btn:hover{background:rgba(255,255,255,0.14)}
-.tv-icon-btn:focus{outline:3px solid #ffcc00}
+.tv-icon-btn{width:42px;height:42px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--txt1);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.tv-icon-btn:hover{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.25)}
+.tv-icon-btn:focus{outline:3px solid #ffcc00;background:rgba(255,204,0,0.12);border-color:#ffcc00}
 .tv-clock{font-size:15px;font-weight:700;color:var(--txt1);letter-spacing:1px;min-width:48px;text-align:center;background:rgba(255,255,255,0.05);padding:6px 10px;border-radius:6px;border:1px solid var(--border)}
 
 /* SUB-TABS */
@@ -1084,10 +1088,70 @@ body.tv-mode .profile-card:focus{
 /* SECTION TITLE */
 .tv-section-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--txt2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 
-/* GRID */
-.tv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:16px}
-@media(min-width:1400px){.tv-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}}
-@media(min-width:1920px){.tv-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:22px}}
+/* GRID v60: Horizontal scroll rows */
+.tv-grid{
+  display:flex;flex-direction:row;flex-wrap:nowrap;
+  overflow-x:auto;overflow-y:visible;
+  gap:16px;padding:8px 0 24px;
+  scroll-snap-type:x mandatory;
+  -ms-overflow-style:none;scrollbar-width:none;
+  scroll-behavior:smooth;
+}
+.tv-grid::-webkit-scrollbar{display:none}
+.tv-grid .tv-card{
+  flex-shrink:0;width:185px;
+  scroll-snap-align:start;
+}
+@media(min-width:1400px){.tv-grid .tv-card{width:200px}}
+@media(min-width:1920px){.tv-grid .tv-card{width:220px}}
+
+/* v60: Múltiplas fileiras TV */
+.tv-row-section{margin-bottom:28px}
+.tv-row-label{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tv-row-label::before{content:'';width:3px;height:14px;background:var(--red);border-radius:2px;display:inline-block;flex-shrink:0}
+
+/* v60: Teclado Virtual */
+.tv-keyboard{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:7px;
+}
+.tv-key{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;color:var(--txt1);
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;
+  padding:12px 4px;cursor:pointer;text-align:center;
+  transition:all 0.15s;
+  outline:none;
+}
+.tv-key:hover,.tv-key:focus{
+  background:var(--bg4);border-color:#ffcc00;
+  outline:3px solid #ffcc00;outline-offset:1px;
+  color:#fff;transform:scale(1.06);z-index:5;
+}
+.tv-key.tv-key-special{
+  background:var(--bg2);color:var(--txt2);font-size:13px;
+  grid-column:span 2;
+}
+.tv-key.tv-key-special:hover,.tv-key.tv-key-special:focus{
+  background:rgba(232,16,42,0.18);border-color:var(--red);outline-color:var(--red);color:#fff;
+}
+.tv-key.tv-key-clear{background:rgba(232,16,42,0.12);color:var(--red)}
+.tv-key-row-break{grid-column:1/-1;height:0}
+.tv-keyboard-display{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:12px 18px;font-size:20px;font-family:'DM Sans',sans-serif;
+  color:var(--txt1);letter-spacing:2px;margin-bottom:4px;
+  min-height:52px;display:flex;align-items:center;
+}
+.tv-keyboard-display .tv-kbd-cursor{
+  display:inline-block;width:2px;height:22px;
+  background:var(--red);margin-left:2px;
+  animation:blink 1s step-start infinite;
+  vertical-align:middle;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* TV CARD */
 .tv-card{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:2/3;cursor:pointer;border:3px solid transparent;transition:all 0.22s ease;background:var(--bg2)}
@@ -3010,110 +3074,295 @@ window.addEventListener('scroll',()=>{
 },{passive:true});
 
 // ══════════════════════════════════════════════════════════════════
-//  NAVEGAÇÃO D-PAD
+//  NAVEGAÇÃO D-PAD — v60 COMPLETA (TV + Mobile)
+//  Cobre: ←↑↓→  OK/Enter  Voltar (Escape/BrowserBack/XF86Back)
 // ══════════════════════════════════════════════════════════════════
 document.addEventListener('keydown', e => {
-  // Player aberto
+  const key = e.key;
+
+  // ── Tecla VOLTAR: todos os padrões de controle remoto ──────────────
+  // Escape, BrowserBack, XF86Back (Tizen/WebOS), GoBack
+  const isBackKey = key==='Escape' || key==='BrowserBack' || key==='XF86Back' || key==='GoBack';
+
+  // ══════════════════════════════════════════════════
+  //  1. TECLADO VIRTUAL (Search TV)
+  // ══════════════════════════════════════════════════
+  const tvSearchWrap = document.getElementById('tvSearchWrap');
+  if (tvSearchWrap && !tvSearchWrap.classList.contains('tv-hidden')) {
+    const focused = document.activeElement;
+    const isKey = focused?.classList.contains('tv-key');
+
+    // Backspace apaga letra (quando foco está numa tecla do teclado)
+    if (isKey && key==='Backspace') { e.preventDefault(); tvTeclarApagar(); return; }
+
+    // Voltar fecha a busca
+    if (isBackKey) { e.preventDefault(); fecharTVSearch(); return; }
+
+    if (isKey) {
+      const keys = Array.from(document.querySelectorAll('.tv-key'));
+      const ki = keys.indexOf(focused);
+      const cols = 9; // 9 colunas no grid
+
+      if (key==='ArrowRight') {
+        e.preventDefault();
+        keys[Math.min(ki+1, keys.length-1)]?.focus();
+        return;
+      }
+      if (key==='ArrowLeft') {
+        e.preventDefault();
+        keys[Math.max(ki-1, 0)]?.focus();
+        return;
+      }
+      if (key==='ArrowDown') {
+        e.preventDefault();
+        // Se existe linha abaixo, vai; senão foca a última tecla
+        const next = keys[ki+cols] || keys[keys.length-1];
+        next?.focus();
+        return;
+      }
+      if (key==='ArrowUp') {
+        e.preventDefault();
+        if (ki < cols) {
+          // Já está na primeira linha → foca botão Fechar (última tecla)
+          keys[keys.length-1]?.focus();
+        } else {
+          keys[ki-cols]?.focus();
+        }
+        return;
+      }
+      if (key==='Enter' || key===' ') {
+        e.preventDefault();
+        focused.click();
+        return;
+      }
+      return; // bloqueia outras teclas enquanto teclado está aberto
+    }
+
+    // Teclado aberto mas sem foco numa tecla → foca a primeira
+    if (['ArrowRight','ArrowLeft','ArrowDown','ArrowUp','Enter'].includes(key)) {
+      e.preventDefault();
+      document.querySelector('.tv-key')?.focus();
+      return;
+    }
+    return;
+  }
+
+  // ══════════════════════════════════════════════════
+  //  2. FILTRO TV (overlay)
+  // ══════════════════════════════════════════════════
+  const tvFilterWrap = document.getElementById('tvFilterWrap');
+  if (tvFilterWrap && !tvFilterWrap.classList.contains('tv-hidden')) {
+    if (isBackKey) { e.preventDefault(); fecharTVFilter(); return; }
+    // Setas entre chips: deixa navegação nativa do browser (tabindex)
+    return;
+  }
+
+  // ══════════════════════════════════════════════════
+  //  3. PLAYER ABERTO
+  // ══════════════════════════════════════════════════
   if (document.getElementById('modal').classList.contains('active')) {
-    // Qualquer tecla no player: mostra botões (TV e celular)
     mostrarRefreshBtn();
-    if (e.key==='Escape'||e.key==='Backspace') { e.preventDefault(); fecharPlayer(); }
-    if (e.key==='ArrowLeft') { e.preventDefault(); skipVideo(-10); }
-    if (e.key==='ArrowRight') { e.preventDefault(); skipVideo(10); }
-    if (e.key===' '||e.key==='MediaPlayPause') { e.preventDefault(); togglePause(); }
+    if (isBackKey || key==='Backspace') { e.preventDefault(); fecharPlayer(); return; }
+    if (key==='ArrowLeft')  { e.preventDefault(); skipVideo(-10); return; }
+    if (key==='ArrowRight') { e.preventDefault(); skipVideo(10); return; }
+    if (key===' ' || key==='MediaPlayPause') { e.preventDefault(); togglePause(); return; }
     return;
   }
-  // Info modal aberto
+
+  // ══════════════════════════════════════════════════
+  //  4. INFO MODAL
+  // ══════════════════════════════════════════════════
   if (document.getElementById('infoModal').classList.contains('open')) {
-    if (e.key==='Escape') fecharInfo();
-    if (e.key==='Enter') { const pb=document.querySelector('.info-btn.primary'); if(pb) pb.click(); }
+    if (isBackKey || key==='Backspace') { e.preventDefault(); fecharInfo(); return; }
+    if (key==='Enter') { const pb=document.querySelector('.info-btn.primary'); if(pb) pb.click(); return; }
+    // Setas: navegam entre os botões Assistir/Favoritar
+    const btns = Array.from(document.querySelectorAll('.info-btn'));
+    const bi = btns.indexOf(document.activeElement);
+    if (key==='ArrowRight' && bi < btns.length-1) { e.preventDefault(); btns[bi+1]?.focus(); return; }
+    if (key==='ArrowLeft'  && bi > 0)              { e.preventDefault(); btns[bi-1]?.focus(); return; }
     return;
   }
-  // Tela de perfis aberta — navegação por setas
+
+  // ══════════════════════════════════════════════════
+  //  5. TELA DE PERFIS
+  // ══════════════════════════════════════════════════
   const profileScreen = document.getElementById('profileScreen');
   if (profileScreen && !profileScreen.classList.contains('hidden')) {
     const cards = Array.from(profileScreen.querySelectorAll('.profile-card'));
     const fi = cards.indexOf(document.activeElement);
-    if (e.key==='ArrowRight' && fi < cards.length-1) { e.preventDefault(); cards[fi+1]?.focus(); }
-    if (e.key==='ArrowLeft'  && fi > 0)              { e.preventDefault(); cards[fi-1]?.focus(); }
-    if (e.key==='ArrowDown'  && fi+2 < cards.length) { e.preventDefault(); cards[fi+2]?.focus(); }
-    if (e.key==='ArrowUp'    && fi >= 2)              { e.preventDefault(); cards[fi-2]?.focus(); }
-    if (fi === -1 && ['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(e.key)) { e.preventDefault(); cards[0]?.focus(); }
+    if (fi === -1 && ['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(key)) {
+      e.preventDefault(); cards[0]?.focus(); return;
+    }
+    if (key==='ArrowRight' && fi < cards.length-1) { e.preventDefault(); cards[fi+1]?.focus(); return; }
+    if (key==='ArrowLeft'  && fi > 0)              { e.preventDefault(); cards[fi-1]?.focus(); return; }
+    if (key==='ArrowDown'  && fi+2 < cards.length) { e.preventDefault(); cards[fi+2]?.focus(); return; }
+    if (key==='ArrowUp'    && fi >= 2)              { e.preventDefault(); cards[fi-2]?.focus(); return; }
+    if (key==='Enter'      && fi >= 0)              { e.preventDefault(); cards[fi].click(); return; }
     return;
   }
-  if (e.key==='Escape') { voltarHome(); return; }
+
+  // ══════════════════════════════════════════════════
+  //  6. INTERFACE TV (tvInterface visível)
+  // ══════════════════════════════════════════════════
+  const tvInterface = document.getElementById('tvInterface');
+  if (tvInterface && !tvInterface.classList.contains('tv-hidden')) {
+
+    // VOLTAR na interface TV → vai para a tela de perfis
+    if (isBackKey) { e.preventDefault(); mostrarTrocaPerfil(); return; }
+
+    const focused = document.activeElement;
+    const isTvTab     = focused?.classList.contains('tv-tab');
+    const isTvIconBtn = focused?.classList.contains('tv-icon-btn');
+    const isTvSubtab  = focused?.classList.contains('tv-subtab');
+    const isTvCard    = focused?.classList.contains('tv-card');
+    const isTvChip    = focused?.classList.contains('tv-chip');
+    const isTvChItem  = focused?.classList.contains('tv-channel-item');
+
+    // OK/Enter: elementos já têm onclick, mas garantimos
+    if (key==='Enter' || key===' ') {
+      if (focused) { e.preventDefault(); focused.click(); return; }
+    }
+
+    // ── Nav Tabs (linha superior) ──────────────────
+    if (isTvTab || isTvIconBtn) {
+      const navEls = Array.from(document.querySelectorAll('.tv-tab, .tv-nav-right .tv-icon-btn'));
+      const idx = navEls.indexOf(focused);
+      if (key==='ArrowRight' && idx < navEls.length-1) { e.preventDefault(); navEls[idx+1]?.focus(); return; }
+      if (key==='ArrowLeft'  && idx > 0)               { e.preventDefault(); navEls[idx-1]?.focus(); return; }
+      if (key==='ArrowDown') {
+        e.preventDefault();
+        const subtabsEl = document.getElementById('tvSubtabs');
+        const firstSub = subtabsEl && !subtabsEl.classList.contains('tv-hidden')
+          ? subtabsEl.querySelector('.tv-subtab') : null;
+        const firstCard = document.querySelector('#tvMainArea .tv-card') || document.querySelector('#tvChannelList .tv-channel-item');
+        (firstSub || firstCard)?.focus();
+        return;
+      }
+      if (key==='ArrowUp') {
+        // Já no topo → nada (ou foco na marca)
+        e.preventDefault(); return;
+      }
+      return;
+    }
+
+    // ── Sub-Tabs ───────────────────────────────────
+    if (isTvSubtab) {
+      const subtabs = Array.from(document.querySelectorAll('.tv-subtab'));
+      const idx = subtabs.indexOf(focused);
+      if (key==='ArrowRight' && idx < subtabs.length-1) { e.preventDefault(); subtabs[idx+1]?.focus(); return; }
+      if (key==='ArrowLeft'  && idx > 0)                { e.preventDefault(); subtabs[idx-1]?.focus(); return; }
+      if (key==='ArrowUp') {
+        e.preventDefault();
+        (document.querySelector('.tv-tab.tv-tab-active') || document.querySelector('.tv-tab'))?.focus();
+        return;
+      }
+      if (key==='ArrowDown') {
+        e.preventDefault();
+        const firstCard = document.querySelector('#tvMainArea .tv-card');
+        firstCard?.focus();
+        return;
+      }
+      return;
+    }
+
+    // ── TV Cards (fileiras horizontais — o _tvSetRowDpad cuida do
+    //    Left/Right/Up/Down dentro e entre fileiras) ─────────────────
+    // Mas se o card não está numa fileira com _tvSetRowDpad (ex: resultado de busca)
+    if (isTvCard) {
+      const rowEl = focused.closest('.tv-grid');
+      if (rowEl) return; // _tvSetRowDpad trata tudo
+      // Busca sem fileira: navegação simples
+      const allCards = Array.from(document.querySelectorAll('.tv-card'));
+      const ci = allCards.indexOf(focused);
+      if (key==='ArrowRight') { e.preventDefault(); allCards[ci+1]?.focus(); return; }
+      if (key==='ArrowLeft')  { e.preventDefault(); allCards[ci-1]?.focus(); return; }
+      if (key==='ArrowUp')    { e.preventDefault(); (document.querySelector('.tv-tab.tv-tab-active')||document.querySelector('.tv-tab'))?.focus(); return; }
+      return;
+    }
+
+    // ── Canal TV (lista de canais) ──────────────────
+    if (isTvChItem) {
+      const items = Array.from(document.querySelectorAll('.tv-channel-item'));
+      const ci = items.indexOf(focused);
+      if (key==='ArrowDown' && ci < items.length-1) { e.preventDefault(); items[ci+1]?.focus(); return; }
+      if (key==='ArrowUp'   && ci > 0)              { e.preventDefault(); items[ci-1]?.focus(); return; }
+      if (key==='ArrowUp'   && ci === 0)            { e.preventDefault(); (document.querySelector('.tv-tab.tv-tab-active'))?.focus(); return; }
+      return;
+    }
+
+    // Chips do filtro (tv-chip)
+    if (isTvChip) return; // navegação via tabindex
+
+    // Sem foco definido na TV → foca primeiro tab
+    if (['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(key)) {
+      e.preventDefault();
+      document.querySelector('.tv-tab')?.focus();
+      return;
+    }
+    return;
+  }
+
+  // ══════════════════════════════════════════════════
+  //  7. INTERFACE MOBILE (fallback)
+  // ══════════════════════════════════════════════════
+  if (isBackKey || key==='Backspace') { voltarHome(); return; }
+
   const focused = document.activeElement;
-  const isCard  = focused?.classList.contains('card');
+  const isCard   = focused?.classList.contains('card');
   const isCatTab = focused?.classList.contains('cat-tab');
 
-  // Enter em card ou cat-tab
-  if (e.key==='Enter') { if(isCard||isCatTab) { e.preventDefault(); focused.click(); } return; }
-
-  // v59: Navegação espacial aprimorada para D-Pad
-  if (e.key==='ArrowLeft' && isCard) {
+  if (key==='Enter') {
+    if (isCard || isCatTab) { e.preventDefault(); focused.click(); }
+    return;
+  }
+  if (key==='ArrowLeft' && isCard) {
     e.preventDefault();
     const prev = focused.previousElementSibling;
-    if (prev?.classList.contains('card')) {
-      prev.focus();
-      prev.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-    }
+    if (prev?.classList.contains('card')) { prev.focus(); prev.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
     return;
   }
-  if (e.key==='ArrowRight' && isCard) {
+  if (key==='ArrowRight' && isCard) {
     e.preventDefault();
     const next = focused.nextElementSibling;
-    if (next?.classList.contains('card')) {
-      next.focus();
-      next.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-    }
+    if (next?.classList.contains('card')) { next.focus(); next.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
     return;
   }
-  if (e.key==='ArrowDown') {
+  if (key==='ArrowDown') {
     e.preventDefault();
     if (isCard) {
-      let nextSection = focused.closest('.row-section')?.nextElementSibling;
-      // Pula seções não-row-section
-      while (nextSection && !nextSection.classList.contains('row-section')) nextSection = nextSection.nextElementSibling;
-      const nextCard = nextSection?.querySelector('.card');
-      if (nextCard) { nextCard.focus(); nextCard.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+      let ns = focused.closest('.row-section')?.nextElementSibling;
+      while (ns && !ns.classList.contains('row-section')) ns = ns.nextElementSibling;
+      const nc = ns?.querySelector('.card');
+      if (nc) { nc.focus(); nc.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
     } else if (isCatTab) {
-      // Vai para o primeiro card
-      const firstCard = document.querySelector('.card');
-      if (firstCard) { firstCard.focus(); firstCard.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+      const fc = document.querySelector('.card');
+      if (fc) { fc.focus(); fc.scrollIntoView({behavior:'smooth',block:'nearest'}); }
     } else {
-      // Foca no primeiro cat-tab ou card disponível
-      const firstCatTab = document.querySelector('.cat-tab');
-      if (firstCatTab) firstCatTab.focus();
-      else document.querySelector('.card')?.focus();
+      (document.querySelector('.cat-tab') || document.querySelector('.card'))?.focus();
     }
     return;
   }
-  if (e.key==='ArrowUp') {
+  if (key==='ArrowUp') {
     e.preventDefault();
     if (isCard) {
-      let prevSection = focused.closest('.row-section')?.previousElementSibling;
-      while (prevSection && !prevSection.classList.contains('row-section')) prevSection = prevSection.previousElementSibling;
-      if (prevSection) {
-        const prevCard = prevSection.querySelector('.card');
-        if (prevCard) { prevCard.focus(); prevCard.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
-      } else {
-        // Sobe para cat-tabs
-        const activeCat = document.querySelector('.cat-tab.active') || document.querySelector('.cat-tab');
-        activeCat?.focus();
-        activeCat?.scrollIntoView({behavior:'smooth',block:'nearest'});
+      let ps = focused.closest('.row-section')?.previousElementSibling;
+      while (ps && !ps.classList.contains('row-section')) ps = ps.previousElementSibling;
+      if (ps) {
+        const pc = ps.querySelector('.card');
+        if (pc) { pc.focus(); pc.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); return; }
       }
+      const ac = document.querySelector('.cat-tab.active') || document.querySelector('.cat-tab');
+      ac?.focus(); ac?.scrollIntoView({behavior:'smooth',block:'nearest'});
     } else if (isCatTab) {
-      // Foca no botão Trocar Perfil ou logo
-      document.getElementById('btnTrocarPerfil')?.focus(); // volta ao header
+      document.getElementById('btnTrocarPerfil')?.focus();
     }
     return;
   }
-  // Setas horizontais nas cat-tabs
   if (isCatTab) {
     const tabs = Array.from(document.querySelectorAll('.cat-tab'));
     const idx = tabs.indexOf(focused);
-    if (e.key==='ArrowRight' && idx < tabs.length-1) { e.preventDefault(); tabs[idx+1].focus(); tabs[idx+1].scrollIntoView({behavior:'smooth',inline:'center'}); }
-    if (e.key==='ArrowLeft'  && idx > 0)              { e.preventDefault(); tabs[idx-1].focus(); tabs[idx-1].scrollIntoView({behavior:'smooth',inline:'center'}); }
+    if (key==='ArrowRight' && idx < tabs.length-1) { e.preventDefault(); tabs[idx+1].focus(); tabs[idx+1].scrollIntoView({behavior:'smooth',inline:'center'}); }
+    if (key==='ArrowLeft'  && idx > 0)              { e.preventDefault(); tabs[idx-1].focus(); tabs[idx-1].scrollIntoView({behavior:'smooth',inline:'center'}); }
   }
 });
 
@@ -3277,17 +3526,94 @@ const _TV_LABELS={destaques:'🎯 Destaques',filmes:'🎬 Filmes',series:'📺 S
 const _TV_FB='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"%3E%3Crect width="200" height="300" fill="%230b0b14"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23404060" font-size="48"%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E';
 
 function _tvRenderConteudo() {
-  const grid=document.getElementById('tvGrid'), title=document.getElementById('tvSectionTitle');
+  const mainArea=document.getElementById('tvMainArea');
+  const titleEl=document.getElementById('tvSectionTitle');
+  const grid=document.getElementById('tvGrid');
   const items=_tvFiltrarDados();
-  if (title) title.textContent=_TV_LABELS[_tvTabAtual]||'';
+  if (titleEl) titleEl.textContent='';
   if (!grid) return;
+
+  // Modo Destaques: split em múltiplas fileiras temáticas
+  if (_tvTabAtual==='destaques') {
+    grid.parentNode.innerHTML='<div class="tv-section-title" id="tvSectionTitle"></div><div id="tvGrid"></div>';
+    const container=document.getElementById('tvGrid');
+    container.style.cssText='display:block;overflow:visible;padding:0';
+    if (!items.length) { container.innerHTML='<div style="color:var(--txt3);font-size:14px;font-weight:600;padding:40px;text-align:center">Nenhum conteúdo encontrado</div>'; return; }
+    const CATS=_tvCatsLazy();
+    const grupos=[
+      {label:'🎬 Em Destaque',    items: items.slice(0,16)},
+      {label:'📺 Séries',         items: items.filter(i=>CATS.series.some(k=>(i.categoria||'').toLowerCase().includes(k))).slice(0,16)},
+      {label:'🎬 Filmes',         items: items.filter(i=>CATS.filmes.some(k=>(i.categoria||'').toLowerCase().includes(k))).slice(0,16)},
+      {label:'⚡ Anime',          items: items.filter(i=>CATS.anime.some(k=>(i.categoria||'').toLowerCase().includes(k))).slice(0,16)},
+      {label:'🧒 Kids',           items: items.filter(i=>CATS.kids.some(k=>(i.categoria||'').toLowerCase().includes(k))).slice(0,12)},
+    ];
+    grupos.forEach(grupo=>{
+      if (!grupo.items.length) return;
+      const sec=document.createElement('div'); sec.className='tv-row-section';
+      const lbl=document.createElement('div'); lbl.className='tv-row-label'; lbl.textContent=grupo.label;
+      const row=document.createElement('div'); row.className='tv-grid';
+      grupo.items.forEach(item=>_tvRenderCard(item,row));
+      // D-Pad horizontal dentro da fileira
+      _tvSetRowDpad(row);
+      sec.appendChild(lbl); sec.appendChild(row);
+      container.appendChild(sec);
+    });
+    return;
+  }
+
+  // Modo normal: fileira única horizontal
+  if (titleEl) titleEl.textContent=_TV_LABELS[_tvTabAtual]||'';
   if (!items.length) { grid.innerHTML='<div style="color:var(--txt3);font-size:14px;font-weight:600;padding:40px;grid-column:1/-1;text-align:center">Nenhum conteúdo encontrado para estes filtros</div>'; return; }
-  grid.innerHTML=''; items.slice(0,96).forEach(item=>_tvRenderCard(item,grid));
+  grid.innerHTML='';
+  items.slice(0,96).forEach(item=>_tvRenderCard(item,grid));
+  _tvSetRowDpad(grid);
+}
+
+// D-Pad horizontal para fileiras TV
+function _tvSetRowDpad(rowEl) {
+  rowEl.addEventListener('keydown', e=>{
+    const focused=document.activeElement;
+    if (!focused || !rowEl.contains(focused)) return;
+    const cards=Array.from(rowEl.querySelectorAll('.tv-card'));
+    const idx=cards.indexOf(focused);
+    if (idx===-1) return;
+    if (e.key==='ArrowRight') {
+      e.preventDefault(); e.stopPropagation();
+      const next=cards[idx+1];
+      if (next) { next.focus(); next.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+    }
+    if (e.key==='ArrowLeft') {
+      e.preventDefault(); e.stopPropagation();
+      const prev=cards[idx-1];
+      if (prev) { prev.focus(); prev.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+    }
+    if (e.key==='ArrowUp') {
+      e.preventDefault(); e.stopPropagation();
+      // Vai para a fileira anterior ou para as tabs
+      const sec=rowEl.closest('.tv-row-section');
+      if (sec) {
+        const prevSec=sec.previousElementSibling;
+        if (prevSec) { const pc=prevSec.querySelector('.tv-card'); if(pc){pc.focus();pc.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});return;} }
+      }
+      // Vai para subtabs ou tabs
+      const subtab=document.querySelector('.tv-subtab.tv-subtab-active')||document.querySelector('.tv-tab.tv-tab-active');
+      subtab?.focus();
+    }
+    if (e.key==='ArrowDown') {
+      e.preventDefault(); e.stopPropagation();
+      const sec=rowEl.closest('.tv-row-section');
+      if (sec) {
+        const nextSec=sec.nextElementSibling;
+        if (nextSec) { const nc=nextSec.querySelector('.tv-card'); if(nc){nc.focus();nc.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});return;} }
+      }
+    }
+  });
 }
 function _tvRenderCard(item,container) {
   const card=document.createElement('div'); card.className='tv-card'; card.tabIndex=0; card.dataset.titulo=item.titulo;
   card.innerHTML=`<img src="${item.poster||_TV_FB}" alt="${esc(item.titulo)}" loading="lazy" onerror="this.src='${_TV_FB}'"><div class="tv-card-overlay"><div class="tv-card-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div><div class="tv-card-title">${esc(item.titulo)}</div><div class="tv-card-cat">${(item.categoria||'').toUpperCase()}</div></div>`;
   card.addEventListener('click',()=>abrirInfo(item));
+  card.addEventListener('focus',()=>card.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}));
   card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); abrirInfo(item); } });
   container.appendChild(card);
 }
@@ -3318,12 +3644,40 @@ function _tvSelecionarCanal(canal,el) {
   const meta=document.getElementById('tvChannelMeta'); if(meta) meta.textContent=canal.titulo+(canal.categoria?' · '+canal.categoria:'');
 }
 
-// ── Search ──
-function abrirTVSearch() { document.getElementById('tvSearchWrap').classList.remove('tv-hidden'); setTimeout(()=>document.getElementById('tvSearchInput')?.focus(),100); }
-function fecharTVSearch() { document.getElementById('tvSearchWrap').classList.add('tv-hidden'); document.getElementById('tvSearchInput').value=''; document.getElementById('tvSearchResults').innerHTML=''; }
+// ── Search (v60: teclado virtual) ──
+let _tvKbTexto = '';
+function abrirTVSearch() {
+  _tvKbTexto = '';
+  document.getElementById('tvSearchWrap').classList.remove('tv-hidden');
+  document.getElementById('tvKbText').textContent = '';
+  document.getElementById('tvSearchResults').innerHTML = '';
+  // Foca na primeira tecla
+  setTimeout(()=>{ const first=document.querySelector('.tv-key'); if(first) first.focus(); },100);
+}
+function fecharTVSearch() {
+  document.getElementById('tvSearchWrap').classList.add('tv-hidden');
+  _tvKbTexto = '';
+  document.getElementById('tvKbText').textContent = '';
+  document.getElementById('tvSearchResults').innerHTML = '';
+}
+function tvTeclarLetra(char) {
+  _tvKbTexto += char;
+  document.getElementById('tvKbText').textContent = _tvKbTexto;
+  tvBuscar(_tvKbTexto);
+}
+function tvTeclarApagar() {
+  _tvKbTexto = _tvKbTexto.slice(0,-1);
+  document.getElementById('tvKbText').textContent = _tvKbTexto;
+  tvBuscar(_tvKbTexto);
+}
+function tvTeclarLimpar() {
+  _tvKbTexto = '';
+  document.getElementById('tvKbText').textContent = '';
+  document.getElementById('tvSearchResults').innerHTML = '';
+}
 function tvBuscar(q) {
-  const results=document.getElementById('tvSearchResults'); if(!q.trim()){results.innerHTML='';return;}
-  const found=todosDados.filter(i=>(i.titulo||'').toLowerCase().includes(q.toLowerCase())||(i.categoria||'').toLowerCase().includes(q.toLowerCase())).slice(0,30);
+  const results=document.getElementById('tvSearchResults'); if(!q||!q.trim()){results.innerHTML='';return;}
+  const found=todosDados.filter(i=>(i.titulo||'').toLowerCase().includes(q.toLowerCase())||(i.categoria||'').toLowerCase().includes(q.toLowerCase())).slice(0,24);
   results.innerHTML=''; found.forEach(item=>_tvRenderCard(item,results));
 }
 
@@ -3430,9 +3784,59 @@ window.onload = function() {
         <span class="tv-overlay-title">🔍 Buscar</span>
         <button class="tv-overlay-close" tabindex="0" onclick="fecharTVSearch()">✕</button>
       </div>
-      <input class="tv-search-input" id="tvSearchInput"
-        placeholder="Digite o título..." oninput="tvBuscar(this.value)" autocomplete="off">
-      <div class="tv-search-results" id="tvSearchResults"></div>
+      <!-- Display virtual do que foi digitado -->
+      <div class="tv-keyboard-display" id="tvKbDisplay">
+        <span id="tvKbText"></span><span class="tv-kbd-cursor"></span>
+      </div>
+      <!-- Teclado Virtual v60 -->
+      <div class="tv-keyboard" id="tvKeyboard">
+        <!-- Linha 1: A-I -->
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('A')">A</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('B')">B</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('C')">C</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('D')">D</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('E')">E</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('F')">F</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('G')">G</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('H')">H</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('I')">I</button>
+        <!-- Linha 2: J-R -->
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('J')">J</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('K')">K</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('L')">L</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('M')">M</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('N')">N</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('O')">O</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('P')">P</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Q')">Q</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('R')">R</button>
+        <!-- Linha 3: S-Z + Espaço -->
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('S')">S</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('T')">T</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('U')">U</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('V')">V</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('W')">W</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('X')">X</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Y')">Y</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('Z')">Z</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra(' ')">⎵</button>
+        <!-- Linha 4: 0-8 -->
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('0')">0</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('1')">1</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('2')">2</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('3')">3</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('4')">4</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('5')">5</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('6')">6</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('7')">7</button>
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('8')">8</button>
+        <!-- Linha 5: 9 + botões especiais -->
+        <button class="tv-key" tabindex="0" onclick="tvTeclarLetra('9')">9</button>
+        <button class="tv-key tv-key-special" tabindex="0" onclick="tvTeclarApagar()">⌫ Apagar</button>
+        <button class="tv-key tv-key-special tv-key-clear" tabindex="0" onclick="tvTeclarLimpar()">🗑 Limpar</button>
+        <button class="tv-key tv-key-special" tabindex="0" onclick="fecharTVSearch()" style="color:var(--txt2)">✕ Fechar</button>
+      </div>
+      <div class="tv-search-results" id="tvSearchResults" style="margin-top:16px"></div>
     </div>
   </div>
 
